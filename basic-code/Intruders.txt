@@ -27,12 +27,13 @@
 220 DATA 24,60,126,255,0,0,0,0
 
 300 REM Initialise
+305 LET sd=100
 310 BORDER 0: PAPER 0: INK 7: CLS
 320 LET px=15: LET py=21
 330 LET bx=0: LET by=0: LET ba=0
 340 LET sc=0: LET ls=-1: LET alive=24
 350 LET gx=1: LET gd=1: LET gy=0
-360 LET mc=0: LET mr=20
+360 LET mc=0: LET mr=25
 365 LET af=0: LET dw=1
 
 400 REM Initialise invaders
@@ -42,6 +43,12 @@
 440     LET a(r,c)=1
 450   NEXT c
 460 NEXT r
+
+470 PRINT AT 8,8; INK 6;"EARTH INTRUDERS"
+475 PRINT AT 10,3; INK 7;"5=LEFT  8=RIGHT  SPC=FIRE"
+480 PRINT AT 14,11; INK 2;"GET READY!"
+485 PAUSE sd
+490 CLS
 
 500 REM Main game loop
 
