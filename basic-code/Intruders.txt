@@ -57,31 +57,30 @@
 620 IF mc<mr THEN GO TO 700
 625 LET mc=0: LET dw=1
 
-640 REM Clear old positions, find outermost alive column bounds
+640 REM Clear entire row in one PRINT, find alive column bounds
 641 LET lc=8: LET rc=1
 650 FOR r=1 TO 3
-660   FOR c=1 TO 8
-665     IF a(r,c)=0 THEN GO TO 680
-666     IF c<lc THEN LET lc=c
-667     IF c>rc THEN LET rc=c
-670     PRINT AT r+1+gy,gx+c;" "
-680   NEXT c
+660   PRINT AT r+1+gy,gx+1;"        "
+665   FOR c=1 TO 8
+666     IF a(r,c)=1 AND c<lc THEN LET lc=c
+667     IF a(r,c)=1 AND c>rc THEN LET rc=c
+668   NEXT c
 690 NEXT r
 
 695 IF gd=1 AND gx+rc>=30 THEN LET gd=-1: LET gy=gy+1: GO TO 700
 696 IF gd=-1 AND gx+lc<=1 THEN LET gd=1: LET gy=gy+1: GO TO 700
 697 LET gx=gx+gd: LET af=1-af
 
-700 REM Draw invaders only when dirty (moved this frame)
+700 REM Draw each row as a single string (3 PRINTs vs up to 24)
 705 IF dw=0 THEN GO TO 800
 710 LET dw=0
 720 FOR r=1 TO 3
+725   LET u$=CHR$(144+(r-1)*2+af): LET s$="        "
 730   FOR c=1 TO 8
-735     IF a(r,c)=0 THEN GO TO 770
-740     LET uk=144+(r-1)*2+af
-760     PRINT AT r+1+gy,gx+c; INK r+3; CHR$ uk
-770   NEXT c
-780 NEXT r
+740     IF a(r,c)=1 THEN LET s$(c TO c)=u$
+750   NEXT c
+760   PRINT AT r+1+gy,gx+1; INK r+3; s$
+770 NEXT r
 
 800 REM Score (only reprint when changed)
 805 IF sc=ls THEN GO TO 900
