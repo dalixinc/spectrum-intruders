@@ -1,0 +1,73 @@
+10 REM Earth Intruders - ZX BASIC
+20 REM SynthSpec project
+30 REM Dale & Primus
+
+100 REM Initialise
+110 BORDER 0: PAPER 0: INK 7: CLS
+120 LET px=15: REM player x position
+130 LET py=21: REM player y position
+140 LET bx=0: LET by=0: LET ba=0
+150 REM ba = bullet active flag
+160 LET sc=0: REM score
+
+200 REM Draw player
+210 PRINT AT py,px; INK 5;"^"
+
+300 REM Initialise invaders
+310 DIM a(3,8): REM alive array
+320 FOR r=1 TO 3
+330   FOR c=1 TO 8
+340     LET a(r,c)=1
+350   NEXT c
+360 NEXT r
+
+400 REM Main game loop
+410 REM Draw invaders
+420 FOR r=1 TO 3
+430   FOR c=1 TO 8
+440     IF a(r,c)=1 THEN PRINT AT r+1,c+1; INK r+3;"O"
+450     IF a(r,c)=0 THEN PRINT AT r+1,c+1;"  "
+460   NEXT c
+470 NEXT r
+
+500 REM Draw score
+510 PRINT AT 0,0; INK 7;"SCORE:"; sc
+
+600 REM Handle input
+610 IF INKEY$="5" AND px>0 THEN PRINT AT py,px;" ": LET px=px-1
+620 IF INKEY$="8" AND px<30 THEN PRINT AT py,px;" ": LET px=px+1
+630 IF INKEY$=" " AND ba=0 THEN LET bx=px: LET by=py-1: LET ba=1
+
+700 REM Update bullet
+710 IF ba=1 THEN PRINT AT by,bx;" "
+720 IF ba=1 THEN LET by=by-1
+730 IF ba=1 AND by<1 THEN LET ba=0
+740 IF ba=1 THEN PRINT AT by,bx; INK 2;"!"
+
+800 REM Check collision
+810 IF ba=0 THEN GOTO 900
+820 FOR r=1 TO 3
+830   FOR c=1 TO 8
+840     IF a(r,c)=1 AND bx=c+1 AND by=r+1 THEN LET a(r,c)=0: LET ba=0: LET sc=sc+10
+850   NEXT c
+860 NEXT r
+
+900 REM Draw player
+910 PRINT AT py,px; INK 5;"^"
+
+1000 REM Check win
+1010 LET alive=0
+1020 FOR r=1 TO 3
+1030   FOR c=1 TO 8
+1040     LET alive=alive+a(r,c)
+1050   NEXT c
+1060 NEXT r
+1070 IF alive=0 THEN GOTO 2000
+
+1100 GOTO 400
+
+2000 REM Win screen
+2010 CLS
+2020 PRINT AT 10,8; INK 6;"YOU WIN!"
+2030 PRINT AT 12,5; INK 7;"SCORE: "; sc
+2040 STOP
