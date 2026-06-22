@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Step 1 — Convert BASIC source to TAP:**
 ```powershell
-.\tools\bas2tap-win\bas2tap.exe -n Intruders basic-code\Intruders.txt basic-code\Intruders.tap
+.\tools\bas2tap-win\bas2tap.exe -sIntruders -a10 basic-code\Intruders.txt basic-code\Intruders.tap
 ```
 - `-n Intruders` sets the program name embedded in the TAP header (max 10 chars)
 - Output `.tap` goes wherever you specify as the last argument
