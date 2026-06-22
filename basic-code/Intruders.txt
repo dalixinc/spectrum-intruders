@@ -1,6 +1,7 @@
 10 REM Earth Intruders - ZX BASIC
 20 REM SynthSpec Project
 30 REM Dale & Primus
+55 DEF FN t(n)=NOT (tk-INT(tk/n)*n)
 
 100 REM Define UDGs (A-G: 3 alien types x 2 frames + cannon)
 110 FOR i=0 TO 7: READ d: POKE USR "A"+i,d: NEXT i
@@ -33,7 +34,7 @@
 330 LET bx=0: LET by=0: LET ba=0
 340 LET sc=0: LET ls=-1: LET alive=24
 350 LET gx=1: LET gd=1: LET gy=0
-360 LET mc=0: LET mr=25
+360 LET tk=0: LET bd=1: LET pd=4: LET id=25
 365 LET af=0: LET dw=1
 
 400 REM Initialise invaders
@@ -51,11 +52,11 @@
 490 CLS
 
 500 REM Main game loop
+510 LET tk=tk+1
 
 600 REM Move invaders
-610 LET mc=mc+1
-620 IF mc<mr THEN GO TO 700
-625 LET mc=0: LET dw=1
+610 IF FN t(id)=0 THEN GO TO 700
+620 LET dw=1
 
 640 REM Clear entire row in one PRINT, find alive column bounds
 641 LET lc=8: LET rc=1
@@ -88,12 +89,14 @@
 815 LET ls=sc
 
 900 REM Input
+905 IF FN t(pd)=0 THEN GO TO 930
 910 IF INKEY$="5" AND px>0 THEN PRINT AT py,px;" ": LET px=px-1
 920 IF INKEY$="8" AND px<30 THEN PRINT AT py,px;" ": LET px=px+1
 930 IF INKEY$=" " AND ba=0 THEN LET bx=px: LET by=py-1: LET ba=1
 
 1000 REM Update bullet
 1010 IF ba=0 THEN GO TO 1100
+1015 IF FN t(bd)=0 THEN GO TO 1100
 1020 PRINT AT by,bx;" "
 1030 LET by=by-1
 1040 IF by<2 THEN LET ba=0: GO TO 1100
@@ -113,12 +116,13 @@
 1300 REM Check win
 1310 IF alive=0 THEN GO TO 2000
 
-1380 REM Dynamic speed
-1390 LET mr=INT(alive*20/24)+5
+1380 REM Dynamic speed (id ticks between invader moves: 25 slow -> 5 fast)
+1390 LET id=INT(alive*20/24)+5
 
 1400 REM Check invaders reached player
 1410 IF gy+4>=py THEN GO TO 3000
 
+1495 PAUSE 1
 1500 GO TO 500
 
 2000 REM Win
