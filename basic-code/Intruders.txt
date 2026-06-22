@@ -1,0 +1,125 @@
+10 REM Earth Intruders - ZX BASIC
+20 REM SynthSpec Project
+30 REM Dale & Primus
+
+100 REM Define UDGs (A-G: 3 alien types x 2 frames + cannon)
+110 FOR i=0 TO 7: READ d: POKE USR "A"+i,d: NEXT i
+120 FOR i=0 TO 7: READ d: POKE USR "B"+i,d: NEXT i
+130 FOR i=0 TO 7: READ d: POKE USR "C"+i,d: NEXT i
+140 FOR i=0 TO 7: READ d: POKE USR "D"+i,d: NEXT i
+145 FOR i=0 TO 7: READ d: POKE USR "E"+i,d: NEXT i
+146 FOR i=0 TO 7: READ d: POKE USR "F"+i,d: NEXT i
+147 FOR i=0 TO 7: READ d: POKE USR "G"+i,d: NEXT i
+
+150 REM UDG A - small alien frame 1 (antenna together, feet wide)
+160 DATA 24,60,90,255,90,36,66,0
+165 REM UDG B - small alien frame 2 (antenna wide, feet together)
+166 DATA 66,60,90,255,90,66,24,0
+170 REM UDG C - crab alien frame 1 (claws wide, inner feet)
+180 DATA 66,189,255,231,126,36,66,0
+182 REM UDG D - crab alien frame 2 (claws together, outer feet)
+184 DATA 36,189,255,231,126,66,36,0
+190 REM UDG E - squid alien frame 1 (wide tentacles, narrow feet)
+200 DATA 60,126,219,255,231,126,66,0
+202 REM UDG F - squid alien frame 2 (narrow tentacles, wide feet)
+204 DATA 60,126,219,255,231,66,126,0
+210 REM UDG G - cannon
+220 DATA 24,60,126,255,0,0,0,0
+
+300 REM Initialise
+310 BORDER 0: PAPER 0: INK 7: CLS
+320 LET px=15: LET py=21
+330 LET bx=0: LET by=0: LET ba=0
+340 LET sc=0: LET ls=-1: LET alive=24
+350 LET gx=1: LET gd=1: LET gy=0
+360 LET mc=0: LET mr=20
+365 LET af=0: LET dw=1
+
+400 REM Initialise invaders
+410 DIM a(3,8)
+420 FOR r=1 TO 3
+430   FOR c=1 TO 8
+440     LET a(r,c)=1
+450   NEXT c
+460 NEXT r
+
+500 REM Main game loop
+
+600 REM Move invaders
+610 LET mc=mc+1
+620 IF mc<mr THEN GO TO 700
+625 LET mc=0: LET af=1-af: LET dw=1
+
+640 REM Clear old positions (skip dead aliens)
+650 FOR r=1 TO 3
+660   FOR c=1 TO 8
+665     IF a(r,c)=0 THEN GO TO 680
+670     PRINT AT r+1+gy,gx+c;" "
+680   NEXT c
+690 NEXT r
+
+695 LET gx=gx+gd
+696 IF gx+8>=30 THEN LET gd=-1: LET gy=gy+1
+697 IF gx<=1 THEN LET gd=1: LET gy=gy+1
+
+700 REM Draw invaders only when dirty (moved this frame)
+705 IF dw=0 THEN GO TO 800
+710 LET dw=0
+720 FOR r=1 TO 3
+730   FOR c=1 TO 8
+735     IF a(r,c)=0 THEN GO TO 770
+740     LET uk=144+(r-1)*2+af
+760     PRINT AT r+1+gy,gx+c; INK r+3; CHR$ uk
+770   NEXT c
+780 NEXT r
+
+800 REM Score (only reprint when changed)
+805 IF sc=ls THEN GO TO 900
+810 PRINT AT 0,0; INK 7;"SCORE:";sc
+815 LET ls=sc
+
+900 REM Input
+910 IF INKEY$="5" AND px>0 THEN PRINT AT py,px;" ": LET px=px-1
+920 IF INKEY$="8" AND px<30 THEN PRINT AT py,px;" ": LET px=px+1
+930 IF INKEY$=" " AND ba=0 THEN LET bx=px: LET by=py-1: LET ba=1
+
+1000 REM Update bullet
+1010 IF ba=0 THEN GO TO 1100
+1020 PRINT AT by,bx;" "
+1030 LET by=by-1
+1040 IF by<2 THEN LET ba=0: GO TO 1100
+1050 PRINT AT by,bx; INK 2;"!"
+
+1100 REM Check collision
+1110 IF ba=0 THEN GO TO 1200
+1120 FOR r=1 TO 3
+1130   FOR c=1 TO 8
+1140     IF a(r,c)=1 AND bx=gx+c AND by=r+1+gy THEN LET a(r,c)=0: LET ba=0: LET sc=sc+10: LET alive=alive-1: PRINT AT r+1+gy,gx+c;" "
+1150   NEXT c
+1160 NEXT r
+
+1200 REM Draw player
+1210 PRINT AT py,px; INK 5; CHR$ 150
+
+1300 REM Check win
+1310 IF alive=0 THEN GO TO 2000
+
+1380 REM Dynamic speed
+1390 LET mr=INT(alive*20/24)+5
+
+1400 REM Check invaders reached player
+1410 IF gy+4>=py THEN GO TO 3000
+
+1500 GO TO 500
+
+2000 REM Win
+2010 CLS
+2020 PRINT AT 10,8; INK 6;"YOU WIN!"
+2030 PRINT AT 12,5; INK 7;"SCORE:";sc
+2040 STOP
+
+3000 REM Game over
+3010 CLS
+3020 PRINT AT 10,6; INK 2;"GAME OVER!"
+3030 PRINT AT 12,5; INK 7;"SCORE:";sc
+3040 STOP
